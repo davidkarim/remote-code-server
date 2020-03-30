@@ -1,4 +1,10 @@
-# Hello World
+# Remote-Code-Server
+
+## Requirements
+
+AWS CLI
+jq
+Terraform 0.11.13 (tfenv recommended to manage terraform versions)
 
 ## Creating a Remote Server
 
