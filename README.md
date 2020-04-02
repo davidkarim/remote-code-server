@@ -13,13 +13,15 @@ This repo contains the terraform scripts necessary to create a remote VS Code en
 
 The following must be defined in a .env file:
 
-* TF_VAR_ec2_ssh_key - Name of existing EC2 instance SSH key
-* TF_VAR_aws_profile - Name of AWS profile, typically located in ~/.aws/credentials
-* TF_VAR_region - Region where to build infrastructure
-* TF_VAR_subnet_id_1 - Public subnet for Application load balancer, EC2 will also be placed here.
-* TF_VAR_subnet_id_2 - Secondary public subnet
-* TF_VAR_aws_vpc_id - VPC ID
-* SERVER_PASSWORD - Password that will be used for access to VS Code server
+| Variable name      | description                                                                    |
+|--------------------|--------------------------------------------------------------------------------|
+| TF_VAR_ec2_ssh_key | Name of existing EC2 instance SSH key                                          |
+| TF_VAR_aws_profile | Name of AWS profile, typically located in ~/.aws/credentials                   |
+| TF_VAR_region      | Region where to build infrastructure                                           |
+| TF_VAR_subnet_id_1 | Public subnet for Application load balancer, EC2 will also be placed here.     |
+| TF_VAR_subnet_id_2 | Secondary public subnet                                                        |
+| TF_VAR_aws_vpc_id  | VPC identifier                                                                 |
+| SERVER_PASSWORD    | Password that will be used for access to VS Code server. Use complex password. |
 
 ## Creating a Remote Server
 
