@@ -78,7 +78,7 @@ resource "aws_security_group" "lb_sg" {
 resource "aws_lb_target_group" "code_server" {
   name     = "code-server-tg"
   port     = 8080
-  protocol = "HTTP"
+  protocol = "${var.protocol}"
   vpc_id   = "${var.aws_vpc_id}"
   target_type = "instance"
   health_check {
@@ -88,7 +88,7 @@ resource "aws_lb_target_group" "code_server" {
     unhealthy_threshold = 2
     path = "/"
     port = "traffic-port"
-    protocol = "HTTP"
+    protocol = "${var.protocol}"
     matcher = "200,302"
   }
 }
@@ -111,7 +111,8 @@ resource "aws_lb" "code_server_lb" {
 resource "aws_lb_listener" "front_end" {
   load_balancer_arn = "${aws_lb.code_server_lb.arn}"
   port              = "8080"
-  protocol          = "HTTP"
+  protocol          = "${var.protocol}"
+  certificate_arn   = "${var.certificate_arn}"
 
   default_action {
     type = "forward"
@@ -179,10 +180,21 @@ resource "aws_volume_attachment" "ebs_attachment" {
 }
 
 resource "null_resource" "server_provisioner" {
-    provisioner "file" {
+  provisioner "file" {
       source = "./README.md"
       destination = "~/README.md"
   }
+
+  provisioner "file" {
+      source = "./server.crt"
+      destination = "~/server.crt"
+  }
+
+  provisioner "file" {
+      source = "./server.key"
+      destination = "~/server.key"
+  }
+
   provisioner "remote-exec" {
     inline = [
         "echo \"--- Update packages ---\"",
@@ -197,6 +209,7 @@ resource "null_resource" "server_provisioner" {
         "sudo mount /dev/xvdp /mnt/projects",
         "sudo chown -R ec2-user:ec2-user /mnt",
         "sudo mv ~/README.md /mnt/projects/",
+        "sudo mv ~/server.* /mnt/projects/",
     ]
   }
   connection {

@@ -8,6 +8,35 @@
 # TF_VAR_subnet_id_2
 # TF_VAR_aws_vpc_id
 # SERVER_PASSWORD
+# TF_VAR_certificate_arn (when setting up secure server)
+
+
+usage()
+{
+    echo "usage: create.sh [[-i image ] | [-s] | [-h]]"
+}
+
+code_server_img="codercom/code-server"
+secure_domain=false
+
+while [ "$1" != "" ]; do
+    case $1 in
+        -i | --image )          shift
+                                code_server_img=$1
+                                ;;
+        -s | --secure )         secure_domain=true
+                                ;;
+        -h | --help )           usage
+                                exit
+                                ;;
+        * )                     usage
+                                exit 1
+    esac
+    shift
+done
+
+# Display Docker image that will be used
+printf "\n\nDocker image to use: $code_server_img \n\n"
 
 # Determine if tfenv is installed
 which tfenv
@@ -27,13 +56,32 @@ else
     printf "Environment (.env) file not found \n"
 fi
 
-# TODO: Add an argument, which would be the name of the optional alternate image
-code_server_img="codercom/code-server"
-
 # Check if terraform init has already run
 if [ ! -d ".terraform" ]; then
     printf "Running terraform init \n"
     terraform init
+fi
+
+printf "\nSecure domain value: $secure_domain \n"
+if [ $secure_domain == false ] && [ ! -e "./server.crt" ] && [ ! -e "./server.key" ]
+then
+    export TF_VAR_protocol=HTTP
+    export TF_VAR_certificate_arn=''
+    printf 'For non-secure domain, creating empty cert and key files. \n'
+    touch server.crt
+    touch server.key
+elif [ $secure_domain == false ]
+then
+    export TF_VAR_protocol=HTTP
+    export TF_VAR_certificate_arn=''
+    printf 'Non-secure domain \n'
+elif [ $secure_domain == true ]
+then
+    export TF_VAR_protocol=HTTPS
+    if [ TF_VAR_certificate_arn == "" ]
+    then
+        printf 'A certificate ARN from AWS Certificate Manager must be defined. Set TF_VAR_certificate_arn \n'
+    fi
 fi
 
 printf "Retrieving Amazon Linux 2 AMI ID for region $TF_VAR_region \n"
@@ -64,16 +112,35 @@ if [ $count -eq 1 ]
 then
     printf "\nStarting service... \n\n"
 
-    ssh -i ~/.ssh/$TF_VAR_ec2_ssh_key.pem ec2-user@$public_ip \
-    docker run -it -d -p 8080:8080 \
-        -v "/mnt/projects:/home/coder/project" \
-        -e PASSWORD=$SERVER_PASSWORD \
-        $code_server_img
+    if [ $secure_domain == true ]
+    then
+        printf "Running secure container... \n"
+        ssh -i ~/.ssh/$TF_VAR_ec2_ssh_key.pem ec2-user@$public_ip \
+        docker run -it -d -p 8080:8080 \
+            -v "/mnt/projects:/home/coder/project" \
+            -e PASSWORD=$SERVER_PASSWORD \
+            $code_server_img \
+            --cert server.crt --cert-key server.key
+    else
+        printf "Running non-secure container... \n"
+        ssh -i ~/.ssh/$TF_VAR_ec2_ssh_key.pem ec2-user@$public_ip \
+        docker run -it -d -p 8080:8080 \
+            -v "/mnt/projects:/home/coder/project" \
+            -e PASSWORD=$SERVER_PASSWORD \
+            $code_server_img
+    fi
 else
     printf "\nService already running \n\n"
 fi
 
 printf "\nPublic IP: $public_ip \n"
-printf "Public DNS: $public_dns \n"
 printf "Server password: $SERVER_PASSWORD \n"
-printf "Full URL: http://$public_dns:8080 \n"
+
+if [ $secure_domain == false ]
+then
+    printf "Full URL: http://$public_dns:8080 \n"
+elif [ $secure_domain == true ]
+then
+    printf "For access, make sure to add CNAME entry in your DNS zone to: $public_dns \n"
+    printf "The server will be available on port 8080 \n"
+fi
