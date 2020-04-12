@@ -62,7 +62,7 @@ if [ ! -d ".terraform" ]; then
     terraform init
 fi
 
-printf "\nSecure domain value: $secure_domain \n"
+printf "\nSecure domain value: %s \n" "$secure_domain"
 if [ $secure_domain == false ] && [ ! -e "./server.crt" ] && [ ! -e "./server.key" ]
 then
     export TF_VAR_protocol=HTTP
@@ -84,7 +84,7 @@ then
     fi
 fi
 
-printf "Retrieving Amazon Linux 2 AMI ID for region $TF_VAR_region \n"
+printf "Retrieving Amazon Linux 2 AMI ID for region %s \n" "$TF_VAR_REGION"
 export TF_VAR_ami_id_amazon_linux=$(aws ec2 describe-images --filters "Name=owner-alias,Values=amazon" "Name=architecture,Values=x86_64" "Name=description,Values='Amazon Linux 2 AMI 2.0.20191024.3 x86_64 HVM gp2'" --profile $TF_VAR_aws_profile --region $TF_VAR_region | jq -r '.Images[].ImageId')
 printf "\nAmazon Linux 2 AMI ID is: $TF_VAR_ami_id_amazon_linux \n\n"
 

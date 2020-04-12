@@ -2,6 +2,15 @@
 
 This repo contains the terraform scripts necessary to create a remote VS Code environment using [code-server](https://github.com/cdr/code-server) on your existing AWS account.
 
+- [Remote-Code-Server](#remote-code-server)
+  - [Requirements](#requirements)
+  - [Build Image](#build-image)
+  - [Environment Variables](#environment-variables)
+  - [Creating a Remote Server](#creating-a-remote-server)
+  - [Connecting to Remote Server](#connecting-to-remote-server)
+  - [Destroying Remote Server](#destroying-remote-server)
+  - [To Do](#to-do)
+
 ## Requirements
 
 * [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html)
