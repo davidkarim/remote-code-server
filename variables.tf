@@ -2,8 +2,7 @@
 variable "region" {}
 variable "ami_id_amazon_linux" {}
 variable "aws_profile" {}
-variable "machine_type"
-{
+variable "machine_type" {
   default = "t2.micro"
 }
 variable "subnet_id_1" {}

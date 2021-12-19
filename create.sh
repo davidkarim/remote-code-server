@@ -43,9 +43,9 @@ which tfenv
 if [ $? == 0 ]
 then
     printf 'tfenv is installed, setting version of terraform \n'
-    tfenv use 0.11.13
+    tfenv use 0.12.21
 else
-    printf 'tfenv is not installed, ensure you are using terraform version 0.11.13 \n'
+    printf 'tfenv is not installed, ensure you are using terraform version 0.12.21 \n'
 fi
 
 if [ -e ".env" ]

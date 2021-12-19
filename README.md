@@ -15,7 +15,7 @@ This repo contains the terraform scripts necessary to create a remote VS Code en
 
 * [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html)
 * [jq](https://stedolan.github.io/jq/download/)
-* [Terraform 0.11.13](https://www.terraform.io/downloads.html)
+* [Terraform 0.12.21](https://www.terraform.io/downloads.html)
 * [tfenv](https://github.com/tfutils/tfenv) recommended to manage terraform versions
 
 ## Build Image
