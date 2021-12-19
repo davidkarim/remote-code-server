@@ -5,7 +5,7 @@ which tfenv
 if [ $? == 0 ]
 then
     printf 'tfenv is installed, setting version of terraform \n'
-    tfenv use 0.11.13
+    tfenv use 0.12.21
 else
     tf_version=$(terraform version | head -n 1 | awk -F 'v' '{print $2}')
     printf 'tfenv is not installed, your terraform version is %s \n' "$tf_version"
