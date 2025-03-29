@@ -85,8 +85,8 @@ then
 fi
 
 printf "Retrieving Amazon Linux 2 AMI ID for region %s \n" "$TF_VAR_REGION"
-export TF_VAR_ami_id_amazon_linux=$(aws ec2 describe-images --filters "Name=owner-alias,Values=amazon" "Name=architecture,Values=x86_64" "Name=description,Values='Amazon Linux 2 AMI 2.0.20191024.3 x86_64 HVM gp2'" --profile $TF_VAR_aws_profile --region $TF_VAR_region | jq -r '.Images[].ImageId')
-printf "\nAmazon Linux 2 AMI ID is: $TF_VAR_ami_id_amazon_linux \n\n"
+export TF_VAR_ami_id_amazon_linux=$(aws ec2 describe-images --filters "Name=owner-alias,Values=amazon" "Name=architecture,Values=x86_64" "Name=description,Values='Amazon Linux 2023 AMI 2023.6.20250317.2 x86_64 HVM kernel-6.1'" --profile $TF_VAR_aws_profile --region $TF_VAR_region | jq -r '.Images[].ImageId')
+printf "\nAmazon Linux AMI ID is: $TF_VAR_ami_id_amazon_linux \n\n"
 
 printf "Running terraform apply \n\n"
 terraform apply
